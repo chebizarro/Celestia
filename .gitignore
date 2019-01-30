@@ -18,3 +18,5 @@ cmake-build
 src/celestia/win32/res/resource_strings.cpp
 src/celestia/qt/rc.cpp
 data/*.cpp
+.idea/
+cmake-build-debug/
