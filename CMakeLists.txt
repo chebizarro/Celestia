@@ -16,7 +16,7 @@ set(VERSION "1.7.0")
 #
 #
 #
-set(ENABLE_CELX     ON  CACHE BOOL "Enable celx scripting, requires Lua library? (Default: on)")
+set(ENABLE_CELX     OFF  CACHE BOOL "Enable celx scripting, requires Lua library? (Default: off)")
 set(ENABLE_SPICE    OFF CACHE BOOL "Use spice library? (Default: off)")
 set(ENABLE_NLS      ON  CACHE BOOL "Enable interface translation? (Default: on)")
 set(ENABLE_GLUT     ON  CACHE BOOL "Build simple Glut frontend? (Default: on)")
@@ -56,8 +56,8 @@ endif()
 add_definitions(-D_USE_MATH_DEFINES)
 
 # Let CMake handle setting C++11 (since 3.1)
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_C_STANDARD 17)
 
 # Use our cmake files
 list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
