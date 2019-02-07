@@ -153,7 +153,7 @@ void OpenVRApplication::RunMainLoop() {
 }
 
 void OpenVRApplication::RenderFrame() {
-
+    m_appCore->draw();
 }
 
 bool OpenVRApplication::Init() {

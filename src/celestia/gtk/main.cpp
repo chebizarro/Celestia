@@ -245,7 +245,7 @@ static void initRealize(GtkWidget* widget, AppData* app)
     #ifdef GNOME
     applySettingsGConfMain(app, app->client);
     #else
-    applySettingsFileMain(app, app->settingsFile);
+    77(app, app->settingsFile);
     #endif /* GNOME */
 
     /* Synchronize all actions with core settings */
