@@ -24,7 +24,12 @@ public:
     void draw();
 
     std::string getUrl();
-    void charEntered(const char);
+    void charEntered(char);
+    void openScript(std::string filename);
+
+    void setLabelMode(int mode, bool state);
+
+    void resyncLabelActions();
 
     virtual void notifyChange(CelestiaCore*, int);
 

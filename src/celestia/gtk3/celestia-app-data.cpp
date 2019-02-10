@@ -3,12 +3,14 @@
 //
 
 #include <celestia/url.h>
+#include <celutil/filetype.h>
 #include "celestia-app-data.h"
 
 CelestiaAppData::CelestiaAppData(std::shared_ptr<CelestiaCore> core)
 : CelestiaWatcher(*core.get())
 , mCore(std::move(core))
 {
+
 }
 
 void CelestiaAppData::setStartURL(std::string url)
@@ -75,11 +77,70 @@ void CelestiaAppData::charEntered(const char c)
     mCore->charEntered(c);
 }
 
+void CelestiaAppData::openScript(std::string filename)
+{
+    ContentType type = DetermineFileType(filename);
+
+    if (type == Content_CelestiaScript)
+    {
+        mCore->runScript(filename);
+    }
+    else if (type == Content_CelestiaLegacyScript)
+    {
+
+    }
+}
+
+
+void CelestiaAppData::setLabelMode(int mode, bool state)
+{
+    auto lm = (mRenderer->getLabelMode() & ~mode) | (state ? mode : 0);
+    mRenderer->setLabelMode(lm);
+}
+
+void CelestiaAppData::resyncLabelActions() {
+
+    auto actionName = std::string {};
+    auto f = mRenderer->getLabelMode();
+
+    for (int i = Renderer::StarLabels; i <= Renderer::GlobularLabels; i *= 2)
+    {
+        switch (i)
+        {
+            case Renderer::StarLabels: actionName = "LabelStars"; break;
+            case Renderer::PlanetLabels: actionName = "LabelPlanets"; break;
+            case Renderer::DwarfPlanetLabels: actionName = "LabelDwarfPlanets"; break;
+            case Renderer::MoonLabels: actionName = "LabelMoons"; break;
+            case Renderer::MinorMoonLabels: actionName = "LabelMinorMoons"; break;
+            case Renderer::ConstellationLabels: actionName = "LabelConstellations"; break;
+            case Renderer::GalaxyLabels: actionName = "LabelGalaxies"; break;
+            case Renderer::AsteroidLabels: actionName = "LabelAsteroids"; break;
+            case Renderer::SpacecraftLabels: actionName = "LabelSpacecraft"; break;
+            case Renderer::LocationLabels: actionName = "LabelLocations"; break;
+            case Renderer::CometLabels: actionName = "LabelComets"; break;
+            case Renderer::NebulaLabels: actionName = "LabelNebulae"; break;
+            case Renderer::OpenClusterLabels: actionName = "LabelOpenClusters"; break;
+            case Renderer::GlobularLabels: actionName = "LabelGlobulars"; break;
+            case Renderer::I18nConstellationLabels: /* Not used yet */
+            default: actionName = "";
+        }
+
+        if (!actionName.empty())
+        {
+            /* Get the action */
+            //action = gtk_action_group_get_action(app->agLabel, actionName);
+
+            /* The current i anded with the labelMode gives state of flag */
+            //gtk_toggle_action_set_active(GTK_TOGGLE_ACTION(action), (i & f));
+        }
+    }
+}
+
 void CelestiaAppData::notifyChange(CelestiaCore*, int property)
 {
     if (property & CelestiaCore::LabelFlagsChanged)
     {
-        // resyncLabelActions(app);
+        resyncLabelActions();
     }
 
     else if (property & CelestiaCore::RenderFlagsChanged)

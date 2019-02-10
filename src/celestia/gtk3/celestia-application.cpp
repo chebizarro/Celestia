@@ -35,7 +35,6 @@ void CelestiaApplication::on_activate()
 
     get_main_window();
 
-    // get and apply settings
     apply_settings();
 
     if(mConfig.fullscreen)
@@ -43,7 +42,7 @@ void CelestiaApplication::on_activate()
         mAppData->setFullScreen(mConfig.fullscreen);
     }
 
-    // set up app menus
+    // app menus set up in on_startup()
     // set up context menus
 
     hide_splash_screen();
@@ -103,7 +102,7 @@ void CelestiaApplication::get_main_window()
 void CelestiaApplication::show_splash_screen()
 {
     if(!mConfig.nosplash) {
-        auto ss = SplashData { mAppData };
+        //auto ss = SplashData { mAppData };
 
         mSplashScreen = CelestiaSplashWindow::create();
         mSplashScreen->present();
@@ -117,9 +116,7 @@ void CelestiaApplication::show_splash_screen()
 void CelestiaApplication::hide_splash_screen()
 {
     if(!mConfig.nosplash) {
-
         mSplashScreen->hide();
-
     }
 }
 
@@ -193,15 +190,30 @@ void CelestiaApplication::on_startup()
 
     mBuilder = Gtk::Builder::create();
 
+    // File Menu
     add_action("copyurl", sigc::mem_fun(*this, &CelestiaApplication::on_menu_file_copy_url));
     add_action("openurl", sigc::mem_fun(*this, &CelestiaApplication::on_menu_file_open_url));
     add_action("openscript", sigc::mem_fun(*this, &CelestiaApplication::on_menu_file_open_script));
     add_action("captureimage", sigc::mem_fun(*this, &CelestiaApplication::on_menu_file_capture_image));
     add_action("capturemovie", sigc::mem_fun(*this, &CelestiaApplication::on_menu_file_capture_movie));
     add_action("quit", sigc::mem_fun(*this, &CelestiaApplication::on_menu_file_quit));
-
+    // Navigation Menu
     add_action("selectsol", sigc::mem_fun(*this, &CelestiaApplication::on_menu_nav_select_sol));
-
+    add_action("tourguide", sigc::mem_fun(*this, &CelestiaApplication::on_menu_nav_tour_guide));
+    add_action("searchobject", sigc::mem_fun(*this, &CelestiaApplication::on_menu_nav_search_object));
+    add_action("gotoobject", sigc::mem_fun(*this, &CelestiaApplication::on_menu_nav_goto_object));
+    add_action("centerselection", sigc::mem_fun(*this, &CelestiaApplication::on_menu_nav_center_selection));
+    add_action("gotoselection", sigc::mem_fun(*this, &CelestiaApplication::on_menu_nav_goto_selection));
+    add_action("followselection", sigc::mem_fun(*this, &CelestiaApplication::on_menu_nav_follow_selection));
+    add_action("syncselection", sigc::mem_fun(*this, &CelestiaApplication::on_menu_nav_sync_selection));
+    add_action("trackselection", sigc::mem_fun(*this, &CelestiaApplication::on_menu_nav_track_selection));
+    add_action("systembrowser", sigc::mem_fun(*this, &CelestiaApplication::on_menu_nav_system_browser));
+    add_action("starbrowser", sigc::mem_fun(*this, &CelestiaApplication::on_menu_nav_star_browser));
+    add_action("eclipsefinder", sigc::mem_fun(*this, &CelestiaApplication::on_menu_nav_eclipse_finder));
+    // Time Menu
+    // Options Menu
+    // Window Menu
+    // Help Menu
 
     try
     {
@@ -236,6 +248,24 @@ void CelestiaApplication::on_menu_file_open_url()
 void CelestiaApplication::on_menu_file_open_script()
 {
 
+    auto fs = Gtk::FileChooserDialog { "Open Script", Gtk::FILE_CHOOSER_ACTION_OPEN };
+    fs.set_transient_for(*mAppWindow.get());
+    fs.add_button("_Cancel", Gtk::RESPONSE_CANCEL);
+    fs.add_button("Open", Gtk::RESPONSE_OK);
+
+    auto result = fs.run();
+
+    switch (result)
+    {
+        case (Gtk::RESPONSE_OK):
+            {
+
+                auto filename = fs.get_filename();
+                mAppData->openScript(filename);
+                break;
+            }
+    }
+
 }
 
 void CelestiaApplication::on_menu_file_capture_image()
@@ -258,3 +288,40 @@ void CelestiaApplication::on_menu_nav_select_sol()
 {
     mAppData->charEntered('H');
 }
+
+void CelestiaApplication::on_menu_nav_tour_guide() {}
+
+void CelestiaApplication::on_menu_nav_search_object() {}
+
+void CelestiaApplication::on_menu_nav_goto_object() {}
+
+void CelestiaApplication::on_menu_nav_center_selection()
+{
+    mAppData->charEntered('c');
+}
+
+void CelestiaApplication::on_menu_nav_goto_selection()
+{
+    mAppData->charEntered('G');
+}
+
+void CelestiaApplication::on_menu_nav_follow_selection()
+{
+    mAppData->charEntered('F');
+}
+
+void CelestiaApplication::on_menu_nav_sync_selection()
+{
+    mAppData->charEntered('Y');
+}
+
+void CelestiaApplication::on_menu_nav_track_selection()
+{
+    mAppData->charEntered('T');
+}
+
+void CelestiaApplication::on_menu_nav_system_browser() {}
+
+void CelestiaApplication::on_menu_nav_star_browser() {}
+
+void CelestiaApplication::on_menu_nav_eclipse_finder() {}

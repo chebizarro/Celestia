@@ -37,7 +37,19 @@ private:
     void on_menu_file_capture_image();
     void on_menu_file_capture_movie();
     void on_menu_file_quit();
+
     void on_menu_nav_select_sol();
+    void on_menu_nav_tour_guide();
+    void on_menu_nav_search_object();
+    void on_menu_nav_goto_object();
+    void on_menu_nav_center_selection();
+    void on_menu_nav_goto_selection();
+    void on_menu_nav_follow_selection();
+    void on_menu_nav_sync_selection();
+    void on_menu_nav_track_selection();
+    void on_menu_nav_system_browser();
+    void on_menu_nav_star_browser();
+    void on_menu_nav_eclipse_finder();
 
     Glib::RefPtr<CelestiaAppWindow> mAppWindow;
     Glib::RefPtr<CelestiaSplashWindow> mSplashScreen;

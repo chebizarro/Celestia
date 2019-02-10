@@ -42,51 +42,51 @@
         </item>
         <item>
           <attribute name='label' translatable='yes'>Tour Guide...</attribute>
-          <attribute name='action' />
+          <attribute name='action'>app.tourguide</attribute>
         </item>
         <item>
           <attribute name='label' translatable='yes'>Search for Object...</attribute>
-          <attribute name='action' />
+          <attribute name='action'>app.searchobject</attribute>
         </item>
         <item>
           <attribute name='label' translatable='yes'>Go to Object...</attribute>
-          <attribute name='action' />
+          <attribute name='action'>app.gotoobject</attribute>
         </item>
       </section>
       <section>
         <item>
           <attribute name='label' translatable='yes'>Center Selection</attribute>
-          <attribute name='action' />
+          <attribute name='action'>app.centerselection</attribute>
         </item>
         <item>
           <attribute name='label' translatable='yes'>Go to Selection</attribute>
-          <attribute name='action' />
+          <attribute name='action'>app.gotoselection</attribute>
         </item>
         <item>
           <attribute name='label' translatable='yes'>Follow Selection</attribute>
-          <attribute name='action' />
+          <attribute name='action'>app.followselection</attribute>
         </item>
         <item>
           <attribute name='label' translatable='yes'>Sync Orbit Selection</attribute>
-          <attribute name='action' />
+          <attribute name='action'>app.syncselection</attribute>
         </item>
         <item>
           <attribute name='label' translatable='yes'>Track Selection</attribute>
-          <attribute name='action' />
+          <attribute name='action'>app.trackselection</attribute>
         </item>
       </section>
       <section>
         <item>
           <attribute name='label' translatable='yes'>Solar System Browser...</attribute>
-          <attribute name='action' />
+          <attribute name='action'>app.systembrowser</attribute>
         </item>
         <item>
           <attribute name='label' translatable='yes'>Star Browser...</attribute>
-          <attribute name='action' />
+          <attribute name='action'>app.starbrowser</attribute>
         </item>
         <item>
           <attribute name='label' translatable='yes'>Eclipse Finder...</attribute>
-          <attribute name='action' />
+          <attribute name='action'>app.eclipsefinder</attribute>
         </item>
       </section>
     </submenu>
