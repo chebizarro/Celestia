@@ -2,6 +2,8 @@
 #define CELESTIA_CELESTIA_APPLICATION_H
 
 #include <gtkmm.h>
+#include "celestia-app-data.h"
+#include "celestia-splash-window.h"
 
 class CelestiaAppWindow;
 
@@ -14,14 +16,34 @@ public:
     static Glib::RefPtr<CelestiaApplication> create();
 
 protected:
-    // Override default signal handlers:
     void on_activate() override;
-    void on_open(const Gio::Application::type_vec_files& files,
-                 const Glib::ustring& hint) override;
+    int on_command_line(const Glib::RefPtr<Gio::ApplicationCommandLine>& command_line) override;
+    int on_handle_local_options(const Glib::RefPtr<Glib::VariantDict>& options);
+
 
 private:
-    CelestiaAppWindow* create_appwindow();
-    void on_hide_window(Gtk::Window* window);
+    void show_splash_screen();
+    void hide_splash_screen();
+    void get_main_window();
+    void apply_settings();
+    void set_sane_win_size(int, int);
+    void set_sane_win_position(int, int);
+
+    Glib::RefPtr<CelestiaAppWindow> mAppWindow;
+    Glib::RefPtr<CelestiaSplashWindow> mSplashScreen;
+    Glib::RefPtr<Gio::Settings> mSettings;
+
+    std::shared_ptr<CelestiaAppData> mAppData;
+
+    struct Config {
+        std::string conf {};
+        std::string dir {};
+        bool fullscreen {false};
+        bool nosplash {false};
+        std::vector<std::string> extrasdir;
+    };
+
+    Config mConfig;
 };
 
 

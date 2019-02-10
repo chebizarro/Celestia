@@ -3,6 +3,7 @@
 //
 
 #include "celestia-appwindow.h"
+#include "celestia-app-data.h"
 #include <gtk/gtk.h>
 #include <iostream>
 #include <GL/glew.h>
@@ -14,26 +15,16 @@ CelestiaAppWindow::CelestiaAppWindow()
 
 
 CelestiaAppWindow::CelestiaAppWindow(_GtkApplicationWindow*& win, Glib::RefPtr<Gtk::Builder>& builder)
-    : Gtk::ApplicationWindow(win)
+    : Gtk::ApplicationWindow(win),
+    mBuilder(builder)
 {
     Gtk::GLArea* pGLArea = nullptr;
     builder->get_widget("GLArea", pGLArea);
     mGLArea = Glib::RefPtr<Gtk::GLArea>(pGLArea);
 
-    mGLArea->set_hexpand(true);
-    mGLArea->set_vexpand(true);
-
     mGLArea->signal_realize().connect(sigc::mem_fun(*this, &CelestiaAppWindow::realize));
     mGLArea->signal_unrealize().connect(sigc::mem_fun(*this, &CelestiaAppWindow::unrealize), false);
     mGLArea->signal_render().connect(sigc::mem_fun(*this, &CelestiaAppWindow::render), false);
-
-    mCore = std::make_unique<CelestiaCore>();
-
-    vector<std::string> configDirs;
-    mCore->initSimulation("", configDirs, nullptr);
-    mSimulation = mCore->getSimulation();
-    mRenderer = mCore->getRenderer();
-    mRenderer->setSolarSystemMaxDistance(mCore->getConfig()->SolarSystemMaxDistance);
 
 }
 
@@ -52,13 +43,13 @@ void CelestiaAppWindow::realize()
             }
         }
 
-        if (!mCore->initRenderer())
+        if (!mAppData->initRenderer())
         {
             std::cerr << "Failed to initialize renderer.\n";
         }
 
-        mCore->start((double)time(NULL) / 86400.0 + (double)astro::Date(1970, 1, 1));
-        mCore->setTimeZoneName("UTC");
+        mAppData->start((double)time(nullptr) / 86400.0 + (double)astro::Date(1970, 1, 1));
+        mAppData->setTimeZoneName("UTC");
 
     }
     catch(const Gdk::GLError& gle)
@@ -85,11 +76,11 @@ void CelestiaAppWindow::unrealize()
 
 bool CelestiaAppWindow::render(const Glib::RefPtr<Gdk::GLContext>& /* context */)
 {
-    mCore->tick();
+    mAppData->tick();
     try
     {
         mGLArea->throw_if_error();
-        mCore->draw();
+        mAppData->draw();
         glFlush();
         return true;
     }
@@ -101,10 +92,13 @@ bool CelestiaAppWindow::render(const Glib::RefPtr<Gdk::GLContext>& /* context */
     }
 }
 
-
-Gtk::Window* do_builder()
+void CelestiaAppWindow::set_app_data(std::shared_ptr<CelestiaAppData> _app)
 {
-    // Load the XML file and instantiate its widgets:
+    mAppData = std::move(_app);
+}
+
+Glib::RefPtr<CelestiaAppWindow> CelestiaAppWindow::create(std::shared_ptr<CelestiaAppData> app)
+{
     auto builder = Gtk::Builder::create();
     try
     {
@@ -113,17 +107,19 @@ Gtk::Window* do_builder()
     catch (const Glib::Error& error)
     {
         std::cout << "Error loading example_builder.ui: " << error.what() << std::endl;
-        return nullptr;
+        return Glib::RefPtr<CelestiaAppWindow>();
     }
 
-    // Get the GtkBuilder-instantiated window:
     CelestiaAppWindow* pWindow = nullptr;
     builder->get_widget_derived("AppWindow", pWindow);
     if (!pWindow)
     {
         std::cout << "Could not get 'AppWindow' from the builder." << std::endl;
-        return nullptr;
+        return Glib::RefPtr<CelestiaAppWindow>();
     }
-    return pWindow;
+
+    pWindow->set_app_data(std::move(app));
+
+    return Glib::RefPtr<CelestiaAppWindow>(pWindow);
 }
 

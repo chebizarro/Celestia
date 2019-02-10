@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/builder">
+    <file>celestia.ui</file>
+    <file>splash.ui</file>
+  </gresource>
+
+  <gresource prefix="/images">
+    <file>celestia.svg</file>
+    <file>celestia_small.svg</file>
+    <file>splash.png</file>
+  </gresource>
+</gresources>

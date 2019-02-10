@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<schemalist>
+  <!-- MAIN OPTIONS -->
+  <schema path="/org/celestia/app/" id="org.celestia.app">
+    <key name="win-width" type="i">
+      <default>640</default>
+      <summary>Render area width.</summary>
+    </key>
+    <key name="win-height" type="i">
+      <default>480</default>
+      <summary>Render area height.</summary>
+    </key>
+    <key name="win-x" type="i">
+      <default>-1</default>
+      <summary>Horizontal window position.</summary>
+    </key>
+    <key name="win-y" type="i">
+      <default>-1</default>
+      <summary>Vertical window position.</summary>
+    </key>
+    <!-- VISUAL OPTIONS -->
+    <key name="ambient-light" type="d">
+      <default>0.1</default>
+      <summary>Ambient light value (default: low).</summary>
+    </key>
+    <key name="visual-magnitude" type="d">
+      <default>8.5</default>
+      <summary>Visual magnitude.</summary>
+    </key>
+    <key name="galaxy-light-gain" type="d">
+      <default>0.0</default>
+      <summary>Brightness control for galaxies.</summary>
+    </key>
+    <key name="distance-limit" type="i">
+      <default>1000000</default>
+      <summary>Rendering limit in light-years.</summary>
+    </key>
+    <key name="show-local-time" type="b">
+      <default>true</default>
+      <summary>Display time in terms of local time zone.</summary>
+    </key>
+    <key name="verbosity" type="i">
+      <default>1</default>
+      <summary>Verbosity of information text displayed.</summary>
+    </key>
+    <key name="full-screen" type="b">
+      <default>false</default>
+      <summary>Fullscreen state.</summary>
+    </key>
+    <key name="star-style" type="i">
+      <default>0</default>
+      <summary>Style of star rendering.</summary>
+      <description>0=Fuzzy Points, 1=Points, 2=Scaled Discs</description>
+    </key>
+    <key name="texture-resolution" type="i">
+      <default>1</default>
+      <summary>Resolution of textures.</summary>
+      <description>0=Low, 1=Medium, 2=High</description>
+    </key>
+    <key name="alt-surface-name" type="s">
+      <default>''</default>
+      <summary>Alternate surface description.</summary>
+    </key>
+    <key name="video-sync" type="b">
+      <default>true</default>
+      <summary>Sync framerate to video refresh rate.</summary>
+    </key>
+  </schema>
+  <!-- RENDER OPTIONS -->
+  <schema path="/org/celestia/app/render/" id="org.celestia.app.render">
+    <key name="stars" type="b">
+      <default>true</default>
+      <summary>Render stars.</summary>
+    </key>
+    <key name="planets" type="b">
+      <default>true</default>
+      <summary>Render planets.</summary>
+    </key>
+    <key name="galaxies" type="b">
+      <default>true</default>
+      <summary>Render galaxies.</summary>
+    </key>
+    <key name="diagrams" type="b">
+      <default>false</default>
+      <summary>Render constellation lines.</summary>
+    </key>
+    <key name="cloud-maps" type="b">
+      <default>true</default>
+      <summary>Render clouds on planetary bodies.</summary>
+    </key>
+    <key name="orbits" type="b">
+      <default>false</default>
+      <summary>Render orbit lines.</summary>
+    </key>
+    <key name="celestial-sphere" type="b">
+      <default>false</default>
+      <summary>Render celestial grid lines.</summary>
+    </key>
+    <key name="night-maps" type="b">
+      <default>true</default>
+      <summary>Render night-side textures on planets.</summary>
+    </key>
+    <key name="atmospheres" type="b">
+      <default>true</default>
+      <summary>Render atmosphere on planets.</summary>
+    </key>
+    <key name="smooth-lines" type="b">
+      <default>true</default>
+      <summary>Render lines anti-aliased.</summary>
+    </key>
+    <key name="eclipse-shadows" type="b">
+      <default>true</default>
+      <summary>Render shadows of bodies on other bodies.</summary>
+    </key>
+    <key name="ring-shadows" type="b">
+      <default>true</default>
+      <summary>Render shadows cast by planetary rings.</summary>
+    </key>
+    <key name="boundaries" type="b">
+      <default>false</default>
+      <summary>Render boundary lines between constellations.</summary>
+    </key>
+    <key name="auto-mag" type="b">
+      <default>true</default>
+      <summary>Render body brightness with auto-magnitude.</summary>
+    </key>
+    <key name="comet-tails" type="b">
+      <default>true</default>
+      <summary>Render tails on comet objects.</summary>
+    </key>
+    <key name="markers" type="b">
+      <default>false</default>
+      <summary>Render coloured markers.</summary>
+    </key>
+    <key name="partial-trajectories" type="b">
+      <default>false</default>
+      <summary>Render partial trajectories.</summary>
+    </key>
+    <key name="nebulae" type="b">
+      <default>true</default>
+      <summary>Render nebulae.</summary>
+    </key>
+    <key name="open-clusters" type="b">
+      <default>false</default>
+      <summary>Render open clusters.</summary>
+    </key>
+    <key name="globulars" type="b">
+      <default>false</default>
+      <summary>Render globulars.</summary>
+    </key>
+    <key name="grid-ecliptic" type="b">
+      <default>false</default>
+      <summary>Render ecliptic grid lines.</summary>
+    </key>
+    <key name="grid-horizontal" type="b">
+      <default>false</default>
+      <summary>Render horizontal grid lines.</summary>
+    </key>
+    <key name="grid-galactic" type="b">
+      <default>false</default>
+      <summary>Render galactic grid lines.</summary>
+    </key>
+  </schema>
+  <!-- LABEL OPTIONS -->
+  <schema path="/org/celestia/app/labels/" id="org.celestia.app.labels">
+    <key name="star" type="b">
+      <default>false</default>
+      <summary>Label stars.</summary>
+    </key>
+    <key name="planet" type="b">
+      <default>false</default>
+      <summary>Label planetary bodies.</summary>
+    </key>
+    <key name="moon" type="b">
+      <default>false</default>
+      <summary>Label moons.</summary>
+    </key>
+    <key name="constellation" type="b">
+      <default>false</default>
+      <summary>Label constellations.</summary>
+    </key>
+    <key name="galaxy" type="b">
+      <default>false</default>
+      <summary>Label known galaxies.</summary>
+    </key>
+    <key name="asteroid" type="b">
+      <default>false</default>
+      <summary>Label asteroid objects.</summary>
+    </key>
+    <key name="spacecraft" type="b">
+      <default>false</default>
+      <summary>Label man-made vehicles.</summary>
+    </key>
+    <key name="location" type="b">
+      <default>false</default>
+      <summary>Label surface locations on bodies.</summary>
+    </key>
+    <key name="comet" type="b">
+      <default>false</default>
+      <summary>Label comet objects.</summary>
+    </key>
+    <key name="nebula" type="b">
+      <default>false</default>
+      <summary>Label nebula objects.</summary>
+    </key>
+    <key name="open-cluster" type="b">
+      <default>false</default>
+      <summary>Label open cluster objects.</summary>
+    </key>
+    <key name="i18n" type="b">
+      <default>false</default>
+      <summary>Constellations are shown with latin names.</summary>
+    </key>
+    <key name="globular" type="b">
+      <default>false</default>
+      <summary>Label globular objects.</summary>
+    </key>
+  </schema>
+  <!-- ORBIT VIEW OPTIONS -->
+  <schema path="/org/celestia/app/orbits/" id="org.celestia.app.orbits">
+    <key name="planet" type="b">
+      <default>true</default>
+      <summary>Show orbits of planets.</summary>
+    </key>
+    <key name="moon" type="b">
+      <default>true</default>
+      <summary>Show orbits of moons.</summary>
+    </key>
+    <key name="asteroid" type="b">
+      <default>false</default>
+      <summary>Show orbits of asteroids.</summary>
+    </key>
+    <key name="comet" type="b">
+      <default>false</default>
+      <summary>Show orbits of comets.</summary>
+    </key>
+    <key name="spacecraft" type="b">
+      <default>false</default>
+      <summary>Show orbits of spacecraft.</summary>
+    </key>
+    <key name="invisible" type="b">
+      <default>false</default>
+      <summary>Show orbits of invisible objects.</summary>
+    </key>
+    <key name="unknown" type="b">
+      <default>false</default>
+      <summary>Show orbits of unclassified objects.</summary>
+    </key>
+  </schema>
+</schemalist>

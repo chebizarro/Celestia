@@ -11,8 +11,8 @@ include_directories(
         ${GLEW_INCLUDE_DIR}
 )
 
-glib_compile_resources("celestia.gresource.xml"
-        SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}"
+glib_compile_resources("data/celestia.gresource.xml"
+        SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data"
         SOURCE "${CMAKE_CURRENT_BINARY_DIR}/celestia-ui.c"
         C_NAME "celestia_ui_resources"
         INTERNAL)
@@ -25,7 +25,11 @@ add_executable(${TARGET_NAME}
         celestia-appwindow.h
         celestia-application.cpp
         celestia-appwindow.cpp
-        celestia-ui.c)
+        celestia-ui.c
+        celestia-app-data.cpp
+        celestia-app-data.h
+        celestia-splash-window.cpp
+        celestia-splash-window.h)
 
 target_link_libraries(${TARGET_NAME}
         ${GTKMM_LIBRARIES}
@@ -35,3 +39,7 @@ target_link_libraries(${TARGET_NAME}
         ${EXTRA_LIBS}
         ${CELESTIA_LIBS}
         )
+
+# Install GSettings schemas
+glib_install_schemas(
+        "data/org.celestia.gschema.xml")

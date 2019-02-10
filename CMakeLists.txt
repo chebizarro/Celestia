@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.3.0)
 
 set(LEGACY_OPENGL_LIBS OFF CACHE BOOL "Use legacy OpenGL libraries instead of glvnd library (Default: off)")
 
@@ -16,10 +16,10 @@ set(VERSION "1.7.0")
 #
 #
 #
-set(ENABLE_CELX     OFF  CACHE BOOL "Enable celx scripting, requires Lua library? (Default: off)")
+set(ENABLE_CELX     ON  CACHE BOOL "Enable celx scripting, requires Lua library? (Default: off)")
 set(ENABLE_SPICE    OFF CACHE BOOL "Use spice library? (Default: off)")
 set(ENABLE_NLS      ON  CACHE BOOL "Enable interface translation? (Default: on)")
-set(ENABLE_GLUT     ON  CACHE BOOL "Build simple Glut frontend? (Default: on)")
+set(ENABLE_GLUT     ON CACHE BOOL "Build simple Glut frontend? (Default: on)")
 set(ENABLE_GTK      OFF CACHE BOOL "Build GTK2 frontend (Unix only)? (Default: off)")
 set(ENABLE_QT       ON  CACHE BOOL "Build Qt frontend? (Default: on)")
 set(ENABLE_WIN      ON  CACHE BOOL "Build Windows native frontend? (Default: on)")
