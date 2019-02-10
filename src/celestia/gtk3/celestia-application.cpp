@@ -187,3 +187,74 @@ Glib::RefPtr<CelestiaApplication> CelestiaApplication::create()
     return Glib::RefPtr<CelestiaApplication>(new CelestiaApplication());
 }
 
+void CelestiaApplication::on_startup()
+{
+    Gtk::Application::on_startup();
+
+    mBuilder = Gtk::Builder::create();
+
+    add_action("copyurl", sigc::mem_fun(*this, &CelestiaApplication::on_menu_file_copy_url));
+    add_action("openurl", sigc::mem_fun(*this, &CelestiaApplication::on_menu_file_open_url));
+    add_action("openscript", sigc::mem_fun(*this, &CelestiaApplication::on_menu_file_open_script));
+    add_action("captureimage", sigc::mem_fun(*this, &CelestiaApplication::on_menu_file_capture_image));
+    add_action("capturemovie", sigc::mem_fun(*this, &CelestiaApplication::on_menu_file_capture_movie));
+    add_action("quit", sigc::mem_fun(*this, &CelestiaApplication::on_menu_file_quit));
+
+    add_action("selectsol", sigc::mem_fun(*this, &CelestiaApplication::on_menu_nav_select_sol));
+
+
+    try
+    {
+        mBuilder->add_from_resource("/builder/menus.ui");
+    }
+    catch (const Glib::Error& ex)
+    {
+        std::cerr << "Building menus failed: " << ex.what();
+    }
+
+    auto object = mBuilder->get_object("MainMenu");
+    auto menuBar = Glib::RefPtr<Gio::Menu>::cast_dynamic(object);
+
+    if(menuBar)
+    {
+        set_menubar(menuBar);
+    }
+
+}
+
+void CelestiaApplication::on_menu_file_copy_url()
+{
+    auto cb = Gtk::Clipboard::get();
+    cb->set_text(mAppData->getUrl());
+}
+
+void CelestiaApplication::on_menu_file_open_url()
+{
+
+}
+
+void CelestiaApplication::on_menu_file_open_script()
+{
+
+}
+
+void CelestiaApplication::on_menu_file_capture_image()
+{
+
+}
+
+void CelestiaApplication::on_menu_file_capture_movie()
+{
+
+}
+
+void CelestiaApplication::on_menu_file_quit()
+{
+    quit();
+}
+
+
+void CelestiaApplication::on_menu_nav_select_sol()
+{
+    mAppData->charEntered('H');
+}

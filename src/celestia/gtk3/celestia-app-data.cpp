@@ -2,6 +2,7 @@
 // Created by bizarro on 2/8/19.
 //
 
+#include <celestia/url.h>
 #include "celestia-app-data.h"
 
 CelestiaAppData::CelestiaAppData(std::shared_ptr<CelestiaCore> core)
@@ -59,6 +60,19 @@ void CelestiaAppData::initSimulation()
     mRenderer = std::shared_ptr<Renderer>(mCore->getRenderer());
 
     mRenderer->setSolarSystemMaxDistance(mCore->getConfig()->SolarSystemMaxDistance);
+}
+
+std::string CelestiaAppData::getUrl()
+{
+    CelestiaState appState;
+    appState.captureState(mCore.get());
+    auto url = Url { appState, Url::CurrentVersion };
+    return  url.getAsString();
+}
+
+void CelestiaAppData::charEntered(const char c)
+{
+    mCore->charEntered(c);
 }
 
 void CelestiaAppData::notifyChange(CelestiaCore*, int property)

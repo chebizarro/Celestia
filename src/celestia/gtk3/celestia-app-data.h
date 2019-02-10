@@ -23,6 +23,9 @@ public:
     void tick();
     void draw();
 
+    std::string getUrl();
+    void charEntered(const char);
+
     virtual void notifyChange(CelestiaCore*, int);
 
 private:

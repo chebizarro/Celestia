@@ -3,6 +3,8 @@
   <gresource prefix="/builder">
     <file>celestia.ui</file>
     <file>splash.ui</file>
+    <file>menus.ui</file>
+    <file>openurldialog.ui</file>
   </gresource>
 
   <gresource prefix="/images">
