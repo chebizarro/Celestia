@@ -4,11 +4,11 @@
   <!-- MAIN OPTIONS -->
   <schema path="/org/celestia/app/" id="org.celestia.app">
     <key name="win-width" type="i">
-      <default>640</default>
+      <default>800</default>
       <summary>Render area width.</summary>
     </key>
     <key name="win-height" type="i">
-      <default>480</default>
+      <default>600</default>
       <summary>Render area height.</summary>
     </key>
     <key name="win-x" type="i">
@@ -41,7 +41,7 @@
       <summary>Display time in terms of local time zone.</summary>
     </key>
     <key name="verbosity" type="i">
-      <default>1</default>
+      <default>2</default>
       <summary>Verbosity of information text displayed.</summary>
     </key>
     <key name="full-screen" type="b">

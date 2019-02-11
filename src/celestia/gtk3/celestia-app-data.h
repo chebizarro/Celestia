@@ -8,15 +8,16 @@
 #include <memory>
 #include <celestia/celestiacore.h>
 
-class CelestiaAppData : public CelestiaWatcher {
+class CelestiaAppData : public CelestiaWatcher  {
 
 public:
-    CelestiaAppData(std::shared_ptr<CelestiaCore>);
+    explicit CelestiaAppData(std::shared_ptr<CelestiaCore>);
 
     void setStartURL(std::string);
     void setFullScreen(bool);
     void setReady(bool);
-    void initSimulation();
+    bool getReady();
+    void initSimulation(ProgressNotifier*);
     void start(double);
     bool initRenderer();
     void setTimeZoneName(std::string);
@@ -27,11 +28,26 @@ public:
     void charEntered(char);
     void openScript(std::string filename);
 
-    void setLabelMode(int mode, bool state);
+    void setLabelMode(int, bool);
+    void setAmbientLight(float);
+    void setVisualMagnitude(float);
+    void setGalaxyLightGain(float);
+    void setDistanceLimit(int value);
+    void setVerbosity(int value);
+    void setStarStyle(Renderer::StarStyle value);
+    void setTextureResolution(int value);
+    void setAltSurface(std::string value);
+    void setDefaultRenderFlags();
+    void showLocalTime(bool);
+    void setVideoSync(bool);
+    void setRenderFlags(int);
+    void setOrbitMask(int);
+    void setLabelMode(int);
+    void resize(int, int);
 
     void resyncLabelActions();
 
-    virtual void notifyChange(CelestiaCore*, int);
+    void notifyChange(CelestiaCore*, int) override;
 
 private:
     std::shared_ptr<CelestiaCore> mCore;
@@ -44,6 +60,8 @@ private:
     bool mShowLocalTime {false};
     bool mFullScreen {false};
     std::string mStartURL {};
+
+    const float amLevels[3] { 0.0, 0.1, 0.25 };
 };
 
 

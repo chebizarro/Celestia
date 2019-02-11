@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Generated with glade 3.22.1 -->
 <interface>
-  <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtk+" version="3.10"/>
   <object class="GtkWindow" id="Splash">
     <property name="app_paintable">True</property>
     <property name="can_focus">False</property>
-    <property name="double_buffered">False</property>
     <property name="type">popup</property>
     <property name="window_position">center</property>
     <property name="type_hint">splashscreen</property>
@@ -17,14 +16,30 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <child>
-          <object class="GtkImage">
+          <object class="GtkImage" id="image">
             <property name="width_request">100</property>
             <property name="height_request">80</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="double_buffered">False</property>
             <property name="resource">/images/splash.png</property>
           </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label">
+            <property name="width_request">100</property>
+            <property name="height_request">80</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">"Initializing..."</property>
+            <property name="justify">right</property>
+            <property name="track_visited_links">False</property>
+            <attributes>
+              <attribute name="foreground" value="#ffffffffffff"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="x">40</property>
+          </packing>
         </child>
       </object>
     </child>

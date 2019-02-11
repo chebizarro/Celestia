@@ -16,11 +16,12 @@ public:
     CelestiaAppWindow(_GtkApplicationWindow*&, Glib::RefPtr<Gtk::Builder>&);
     static Glib::RefPtr<CelestiaAppWindow> create(std::shared_ptr<CelestiaAppData>);
 
-
 protected:
-    void realize();
-    void unrealize();
-    bool render(const Glib::RefPtr<Gdk::GLContext>& /* context */);
+    void gl_realize();
+    void gl_unrealize();
+    bool gl_render(const Glib::RefPtr<Gdk::GLContext>& /* context */);
+    bool gl_configure(GdkEventConfigure *configure_event);
+    bool gl_idle();
 
 private:
     void set_app_data(std::shared_ptr<CelestiaAppData>);
@@ -30,8 +31,7 @@ private:
     Glib::RefPtr<Gio::Settings> mSettings;
     std::shared_ptr<CelestiaAppData> mAppData;
 
-}
-;
+};
 
 
 #define CELESTIA_CELESTIA_APPWINDOW_H

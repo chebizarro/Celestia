@@ -31,16 +31,13 @@ void CelestiaApplication::on_activate()
 
     mAppData = std::make_shared<CelestiaAppData>(core);
 
-    mAppData->initSimulation();
+    auto ss = dynamic_cast<ProgressNotifier*>(mSplashScreen.get());
+
+    mAppData->initSimulation(ss);
 
     get_main_window();
 
     apply_settings();
-
-    if(mConfig.fullscreen)
-    {
-        mAppData->setFullScreen(mConfig.fullscreen);
-    }
 
     // app menus set up in on_startup()
     // set up context menus
@@ -50,19 +47,100 @@ void CelestiaApplication::on_activate()
     mAppWindow->present();
 
     mAppData->setReady(true);
+}
 
+static int read_labels()
+{
+    auto settings = Gio::Settings::create("org.celestia.app.labels");
+    int lm = Renderer::NoLabels;
+    lm |= Renderer::StarLabels  * settings->get_boolean("star");
+    lm |= Renderer::PlanetLabels  * settings->get_boolean("planet");
+    lm |= Renderer::MoonLabels  * settings->get_boolean("moon");
+    lm |= Renderer::ConstellationLabels  * settings->get_boolean("constellation");
+    lm |= Renderer::GalaxyLabels  * settings->get_boolean("galaxy");
+    lm |= Renderer::AsteroidLabels  * settings->get_boolean("asteroid");
+    lm |= Renderer::SpacecraftLabels  * settings->get_boolean("spacecraft");
+    lm |= Renderer::LocationLabels  * settings->get_boolean("location");
+    lm |= Renderer::CometLabels  * settings->get_boolean("comet");
+    lm |= Renderer::NebulaLabels  * settings->get_boolean("nebula");
+    lm |= Renderer::OpenClusterLabels  * settings->get_boolean("open-cluster");
+    lm |= Renderer::I18nConstellationLabels  * settings->get_boolean("i18n");
+    lm |= Renderer::GlobularLabels  * settings->get_boolean("globular");
+    return lm;
+}
+
+static int read_orbits()
+{
+    auto settings = Gio::Settings::create("org.celestia.app.orbits");
+    int om = 0;
+    om |= Body::Planet * settings->get_boolean("planet");
+    om |= Body::Moon * settings->get_boolean("moon");
+    om |= Body::Asteroid * settings->get_boolean("asteroid");
+    om |= Body::Comet * settings->get_boolean("comet");
+    om |= Body::Spacecraft * settings->get_boolean("spacecraft");
+    om |= Body::Invisible * settings->get_boolean("invisible");
+    om |= Body::Unknown * settings->get_boolean("unknown");
+    return om;
+}
+
+static int read_render_settings()
+{
+    auto settings = Gio::Settings::create("org.celestia.app.render");
+
+    int rf = Renderer::ShowNothing;
+    rf |= Renderer::ShowStars * settings->get_boolean("stars");
+    rf |= Renderer::ShowPlanets * settings->get_boolean("planets");
+    rf |= Renderer::ShowGalaxies * settings->get_boolean("galaxies");
+    rf |= Renderer::ShowDiagrams * settings->get_boolean("diagrams");
+    rf |= Renderer::ShowCloudMaps * settings->get_boolean("cloud-maps");
+    rf |= Renderer::ShowOrbits * settings->get_boolean("orbits");
+    rf |= Renderer::ShowCelestialSphere * settings->get_boolean("celestial-sphere");
+    rf |= Renderer::ShowNightMaps * settings->get_boolean("night-maps");
+    rf |= Renderer::ShowAtmospheres * settings->get_boolean("atmospheres");
+    rf |= Renderer::ShowSmoothLines * settings->get_boolean("smooth-lines");
+    rf |= Renderer::ShowEclipseShadows * settings->get_boolean("eclipse-shadows");
+    rf |= Renderer::ShowRingShadows * settings->get_boolean("ring-shadows");
+    rf |= Renderer::ShowBoundaries * settings->get_boolean("boundaries");
+    rf |= Renderer::ShowAutoMag * settings->get_boolean("auto-mag");
+    rf |= Renderer::ShowCometTails * settings->get_boolean("comet-tails");
+    rf |= Renderer::ShowMarkers * settings->get_boolean("markers");
+    rf |= Renderer::ShowPartialTrajectories * settings->get_boolean("partial-trajectories");
+    rf |= Renderer::ShowNebulae * settings->get_boolean("nebulae");
+    rf |= Renderer::ShowOpenClusters * settings->get_boolean("open-clusters");
+    rf |= Renderer::ShowGlobulars * settings->get_boolean("globulars");
+    rf |= Renderer::ShowGalacticGrid * settings->get_boolean("grid-galactic");
+    rf |= Renderer::ShowEclipticGrid * settings->get_boolean("grid-ecliptic");
+    rf |= Renderer::ShowHorizonGrid * settings->get_boolean("grid-horizontal");
+    return rf;
 }
 
 void CelestiaApplication::apply_settings()
 {
     mSettings = Gio::Settings::create("org.celestia.app");
-
-    mAppData->setFullScreen(mSettings->get_boolean("full-screen"));
-
+    
     set_sane_win_size(mSettings->get_int("win-width"), mSettings->get_int("win-height"));
-
     set_sane_win_position(mSettings->get_int("win-x"), mSettings->get_int("win-y"));
 
+    mAppData->setFullScreen(mSettings->get_boolean("full-screen"));
+    mAppData->setAmbientLight(static_cast<float>(mSettings->get_double("ambient-light")));
+    mAppData->setVisualMagnitude(static_cast<float>(mSettings->get_double("visual-magnitude")));
+    mAppData->setGalaxyLightGain(static_cast<float>(mSettings->get_double("galaxy-light-gain")));
+    mAppData->setDistanceLimit(mSettings->get_int("distance-limit"));
+    mAppData->setVerbosity(mSettings->get_int("verbosity"));
+    mAppData->setStarStyle(static_cast<Renderer::StarStyle>(mSettings->get_int("star-style")));
+    mAppData->setTextureResolution(mSettings->get_int("texture-resolution"));
+    mAppData->setAltSurface(mSettings->get_string("alt-surface-name"));
+    mAppData->showLocalTime(mSettings->get_boolean("show-local-time"));
+    mAppData->setVideoSync(mSettings->get_boolean("video-sync"));
+
+    mAppData->setRenderFlags(read_render_settings());
+    mAppData->setOrbitMask(read_orbits());
+    mAppData->setLabelMode(read_labels());
+
+    if(mConfig.fullscreen)
+    {
+        mAppData->setFullScreen(mConfig.fullscreen);
+    }
 }
 
 void CelestiaApplication::set_sane_win_size(int width, int height)
@@ -71,10 +149,10 @@ void CelestiaApplication::set_sane_win_size(int width, int height)
     auto rect = Gdk::Rectangle {};
     screen->get_workarea(rect);
 
-    if (width < 320 || width > rect.get_width() || height < 240 || height > rect.get_height())
+    if (width < 400 || width > rect.get_width() || height < 300 || height > rect.get_height())
     {
-        width = 640;
-        height = 480;
+        width = 800;
+        height = 600;
     }
 
     mAppWindow->set_size_request(width, height);
@@ -90,7 +168,6 @@ void CelestiaApplication::set_sane_win_position(int x, int y)
     {
         mAppWindow->move(x, y);
     }
-
 }
 
 void CelestiaApplication::get_main_window()
@@ -117,6 +194,7 @@ void CelestiaApplication::hide_splash_screen()
 {
     if(!mConfig.nosplash) {
         mSplashScreen->hide();
+        auto _ = mSplashScreen.release();
     }
 }
 
@@ -255,15 +333,10 @@ void CelestiaApplication::on_menu_file_open_script()
 
     auto result = fs.run();
 
-    switch (result)
+    if (result == Gtk::RESPONSE_OK)
     {
-        case (Gtk::RESPONSE_OK):
-            {
-
-                auto filename = fs.get_filename();
-                mAppData->openScript(filename);
-                break;
-            }
+        auto filename = fs.get_filename();
+        mAppData->openScript(filename);
     }
 
 }

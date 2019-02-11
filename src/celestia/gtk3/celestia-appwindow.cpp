@@ -22,15 +22,36 @@ CelestiaAppWindow::CelestiaAppWindow(_GtkApplicationWindow*& win, Glib::RefPtr<G
     builder->get_widget("GLArea", pGLArea);
     mGLArea = Glib::RefPtr<Gtk::GLArea>(pGLArea);
 
-    mGLArea->signal_realize().connect(sigc::mem_fun(*this, &CelestiaAppWindow::realize));
-    mGLArea->signal_unrealize().connect(sigc::mem_fun(*this, &CelestiaAppWindow::unrealize), false);
-    mGLArea->signal_render().connect(sigc::mem_fun(*this, &CelestiaAppWindow::render), false);
+    mGLArea->set_hexpand(true);
+    mGLArea->set_vexpand(true);
+    //mGLArea->set_auto_render(true);
 
+    mGLArea->signal_realize().connect(sigc::mem_fun(*this, &CelestiaAppWindow::gl_realize));
+    mGLArea->signal_unrealize().connect(sigc::mem_fun(*this, &CelestiaAppWindow::gl_unrealize), false);
+    mGLArea->signal_render().connect(sigc::mem_fun(*this, &CelestiaAppWindow::gl_render), false);
+    mGLArea->signal_configure_event().connect(sigc::mem_fun(*this, &CelestiaAppWindow::gl_configure));
+
+    //Glib::signal_idle().connect(sigc::mem_fun(*this, &CelestiaAppWindow::gl_idle));
 }
 
-void CelestiaAppWindow::realize()
+bool CelestiaAppWindow::gl_idle()
+{
+    mAppData->tick();
+    gl_render(Glib::RefPtr<Gdk::GLContext>());
+}
+
+bool CelestiaAppWindow::gl_configure(GdkEventConfigure *configure_event)
+{
+    auto w = mGLArea->get_allocated_width();
+    auto h = mGLArea->get_allocated_height();
+    mAppData->resize(w, h);
+    return false;
+}
+
+void CelestiaAppWindow::gl_realize()
 {
     mGLArea->make_current();
+
     try
     {
         mGLArea->throw_if_error();
@@ -43,13 +64,30 @@ void CelestiaAppWindow::realize()
             }
         }
 
+        //mGLArea->set_has_depth_buffer();
+
         if (!mAppData->initRenderer())
         {
             std::cerr << "Failed to initialize renderer.\n";
         }
 
+        mAppData->tick();
+
         mAppData->start((double)time(nullptr) / 86400.0 + (double)astro::Date(1970, 1, 1));
         mAppData->setTimeZoneName("UTC");
+
+        auto glcontext = mGLArea->get_context();
+        auto glwindow = glcontext->get_window();
+        auto frame_clock = gdk_window_get_frame_clock(glwindow->gobj());
+
+        g_signal_connect_swapped(frame_clock
+            ,"update"
+            ,G_CALLBACK(gtk_gl_area_queue_render)
+            ,mGLArea->gobj()
+            );
+
+
+        gdk_frame_clock_begin_updating(frame_clock);
 
     }
     catch(const Gdk::GLError& gle)
@@ -59,7 +97,7 @@ void CelestiaAppWindow::realize()
     }
 }
 
-void CelestiaAppWindow::unrealize()
+void CelestiaAppWindow::gl_unrealize()
 {
     mGLArea->make_current();
     try
@@ -74,14 +112,20 @@ void CelestiaAppWindow::unrealize()
     }
 }
 
-bool CelestiaAppWindow::render(const Glib::RefPtr<Gdk::GLContext>& /* context */)
+bool CelestiaAppWindow::gl_render(const Glib::RefPtr<Gdk::GLContext>& context)
 {
-    mAppData->tick();
+    glClearColor (0.5, 0.5, 0.5, 1.0);
+    glClear (GL_COLOR_BUFFER_BIT);
+
     try
     {
-        mGLArea->throw_if_error();
-        mAppData->draw();
-        glFlush();
+        if (mAppData->getReady()) {
+            mAppData->tick();
+            mGLArea->throw_if_error();
+            mAppData->draw();
+
+            //glFlush();
+        }
         return true;
     }
     catch(const Gdk::GLError& gle)

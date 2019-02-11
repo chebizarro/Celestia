@@ -23,6 +23,11 @@ void CelestiaAppData::setReady(bool ready)
     mReady = ready;
 }
 
+bool CelestiaAppData::getReady()
+{
+    return mReady;
+}
+
 void CelestiaAppData::setFullScreen(bool fullscreen)
 {
     mFullScreen = fullscreen;
@@ -53,14 +58,15 @@ void CelestiaAppData::draw()
     mCore->draw();
 }
 
-void CelestiaAppData::initSimulation()
+void CelestiaAppData::initSimulation(ProgressNotifier* pn)
 {
     vector<std::string> configDirs;
-    mCore->initSimulation("", configDirs, nullptr);
+    mCore->initSimulation("", configDirs, pn);
 
     mSimulation = std::shared_ptr<Simulation>(mCore->getSimulation());
     mRenderer = std::shared_ptr<Renderer>(mCore->getRenderer());
 
+    mRenderer->getGLContext()->setRenderPath(GLContext::GLPath_GLSL);
     mRenderer->setSolarSystemMaxDistance(mCore->getConfig()->SolarSystemMaxDistance);
 }
 
@@ -136,8 +142,105 @@ void CelestiaAppData::resyncLabelActions() {
     }
 }
 
+void CelestiaAppData::setAmbientLight(float value)
+{
+    if (value < 0.0 || value > 1.0)
+        value = amLevels[1]; /* Default to "Low" */
+
+    mRenderer->setAmbientLightLevel(value);
+}
+
+void CelestiaAppData::setVisualMagnitude(float value)
+{
+    if (value < 0.0 || value > 100.0)
+        value = 8.5f; /* Default from Simulation::Simulation() */
+
+    mSimulation->setFaintestVisible(value);
+}
+
+void CelestiaAppData::setGalaxyLightGain(float value)
+{
+    if (value < 0.0 || value > 1.0)
+        value = 0.0f; /* Default */
+
+    Galaxy::setLightGain(value);
+}
+
+void CelestiaAppData::setDistanceLimit(int value)
+{
+    if (value < 0 || value > 1000000)
+        value = 1000000; /* Default to maximum */
+
+    mRenderer->setDistanceLimit(value);
+}
+
+void CelestiaAppData::setVerbosity(int value)
+{
+    if (value < 0 || value > 2)
+        value = 1; /* Default to "Terse" */
+
+    mCore->setHudDetail(value);
+}
+
+void CelestiaAppData::setStarStyle(Renderer::StarStyle value)
+{
+    if (value < Renderer::FuzzyPointStars || value > Renderer::ScaledDiscStars)
+        value = Renderer::FuzzyPointStars;
+
+    mRenderer->setStarStyle(value);
+}
+
+void CelestiaAppData::setTextureResolution(int value)
+{
+    if (value < 0 || value > TEXTURE_RESOLUTION)
+        value = 1; /* Default to "Medium" */
+
+   mRenderer->setResolution(static_cast<uint>(value));
+}
+
+void CelestiaAppData::setAltSurface(std::string value)
+{
+    mSimulation->getActiveObserver()->setDisplayedSurface(value);
+}
+
+void CelestiaAppData::showLocalTime(bool ltime)
+{
+    mShowLocalTime = ltime;
+}
+
+void CelestiaAppData::setDefaultRenderFlags()
+{
+    mRenderer->setRenderFlags(Renderer::DefaultRenderFlags);
+}
+
+void CelestiaAppData::setVideoSync(bool sync)
+{
+    mRenderer->setVideoSync(sync);
+}
+
+void CelestiaAppData::setRenderFlags(int flags)
+{
+    mRenderer->setRenderFlags(static_cast<uint64_t>(flags));
+}
+
+void CelestiaAppData::setOrbitMask(int mask)
+{
+    mRenderer->setOrbitMask(mask);
+}
+
+void CelestiaAppData::setLabelMode(int mode)
+{
+    mRenderer->setLabelMode(mode);
+}
+
+void CelestiaAppData::resize(int x, int y)
+{
+    mCore->resize(x, y);
+}
+
 void CelestiaAppData::notifyChange(CelestiaCore*, int property)
 {
+
     if (property & CelestiaCore::LabelFlagsChanged)
     {
         resyncLabelActions();
@@ -153,10 +256,12 @@ void CelestiaAppData::notifyChange(CelestiaCore*, int property)
         */
     }
 
-        /*
-        else if (property & CelestiaCore::VerbosityLevelChanged)
-            resyncVerbosityActions(app);
+    else if (property & CelestiaCore::VerbosityLevelChanged)
+        std::cout << "Changed property: " << property << std::endl;
 
+            //resyncVerbosityActions(app);
+
+        /*
         else if (property & CelestiaCore::TimeZoneChanged)
             resyncTimeZoneAction(app);
 
