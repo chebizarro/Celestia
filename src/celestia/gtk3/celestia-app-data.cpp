@@ -66,7 +66,7 @@ void CelestiaAppData::initSimulation(ProgressNotifier* pn)
     mSimulation = std::shared_ptr<Simulation>(mCore->getSimulation());
     mRenderer = std::shared_ptr<Renderer>(mCore->getRenderer());
 
-    mRenderer->getGLContext()->setRenderPath(GLContext::GLPath_GLSL);
+    //mRenderer->getGLContext()->setRenderPath(GLContext::GLPath_GLSL);
     mRenderer->setSolarSystemMaxDistance(mCore->getConfig()->SolarSystemMaxDistance);
 }
 
@@ -256,8 +256,8 @@ void CelestiaAppData::notifyChange(CelestiaCore*, int property)
         */
     }
 
-    else if (property & CelestiaCore::VerbosityLevelChanged)
-        std::cout << "Changed property: " << property << std::endl;
+    //else if (property & CelestiaCore::VerbosityLevelChanged)
+        //std::cout << "Changed property: " << property << std::endl;
 
             //resyncVerbosityActions(app);
 

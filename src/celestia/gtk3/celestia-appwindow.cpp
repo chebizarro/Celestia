@@ -8,6 +8,8 @@
 #include <iostream>
 #include <GL/glew.h>
 
+#include <assert.h>     /* assert */
+
 CelestiaAppWindow::CelestiaAppWindow()
         : Gtk::ApplicationWindow()
 {
@@ -36,7 +38,7 @@ CelestiaAppWindow::CelestiaAppWindow(_GtkApplicationWindow*& win, Glib::RefPtr<G
 
 bool CelestiaAppWindow::gl_idle()
 {
-    mAppData->tick();
+    //mAppData->tick();
     gl_render(Glib::RefPtr<Gdk::GLContext>());
 }
 
@@ -71,7 +73,13 @@ void CelestiaAppWindow::gl_realize()
             std::cerr << "Failed to initialize renderer.\n";
         }
 
-        mAppData->tick();
+        GLenum err;
+        while ((err = glGetError()) != GL_NO_ERROR) {
+            std::cout << "realize err:" << err << std::endl;
+        }
+
+
+        //mAppData->tick();
 
         mAppData->start((double)time(nullptr) / 86400.0 + (double)astro::Date(1970, 1, 1));
         mAppData->setTimeZoneName("UTC");
@@ -120,12 +128,19 @@ bool CelestiaAppWindow::gl_render(const Glib::RefPtr<Gdk::GLContext>& context)
     try
     {
         if (mAppData->getReady()) {
-            mAppData->tick();
+            //mAppData->tick();
             mGLArea->throw_if_error();
             mAppData->draw();
 
             //glFlush();
         }
+
+        GLenum err;
+        while ((err = glGetError()) != GL_NO_ERROR) {
+            //std::cout << err << std::endl;
+        }
+        //assert(glGetError() == GL_NO_ERROR);
+
         return true;
     }
     catch(const Gdk::GLError& gle)

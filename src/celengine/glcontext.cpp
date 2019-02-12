@@ -17,33 +17,20 @@ using namespace std;
 
 void GLContext::init(const vector<string>& ignoreExt)
 {
-    auto* extensionsString = (char*) glGetString(GL_EXTENSIONS);
-    if (extensionsString != nullptr)
+    GLint n = 0;
+    glGetIntegerv(GL_NUM_EXTENSIONS, &n);
+
+    for (GLint i = 0; i < n; i++)
     {
-        char* next = extensionsString;
+        auto ext = std::string((const char*)glGetStringi(GL_EXTENSIONS, i));
 
-        while (*next != '\0')
-        {
-            while (*next != '\0' && *next != ' ')
-                next++;
-
-            string ext(extensionsString, next - extensionsString);
-
-            // scan the ignore list
-            auto iter = std::find(ignoreExt.begin(), ignoreExt.end(), ext);
-            if (iter == ignoreExt.end())
-                extensions.push_back(ext);
-
-            if (*next == '\0')
-                break;
-            next++;
-            extensionsString = next;
-        }
+        auto iter = std::find(ignoreExt.begin(), ignoreExt.end(), ext);
+        if (iter == ignoreExt.end())
+            extensions.push_back(ext);
     }
 
     glGetIntegerv(GL_MAX_TEXTURE_UNITS,
                   (GLint*) &maxSimultaneousTextures);
-
 }
 
 
