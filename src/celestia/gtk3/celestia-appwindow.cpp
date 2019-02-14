@@ -73,12 +73,6 @@ void CelestiaAppWindow::gl_realize()
             std::cerr << "Failed to initialize renderer.\n";
         }
 
-        GLenum err;
-        while ((err = glGetError()) != GL_NO_ERROR) {
-            std::cout << "realize err:" << err << std::endl;
-        }
-
-
         //mAppData->tick();
 
         mAppData->start((double)time(nullptr) / 86400.0 + (double)astro::Date(1970, 1, 1));

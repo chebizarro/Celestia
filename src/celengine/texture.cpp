@@ -823,6 +823,12 @@ Texture* CreateProceduralTexture(int width, int height,
 {
     Image* img = new Image(format, width, height);
 
+    GLenum err;
+    while ((err = glGetError()) != GL_NO_ERROR) {
+        std::cout << "Image:" << err << std::endl;
+    }
+
+
     for (int y = 0; y < height; y++)
     {
         for (int x = 0; x < width; x++)
@@ -831,6 +837,10 @@ Texture* CreateProceduralTexture(int width, int height,
             float v = ((float) y + 0.5f) / (float) height * 2 - 1;
             func(u, v, 0, img->getPixelRow(y) + x * img->getComponents());
         }
+    }
+
+    while ((err = glGetError()) != GL_NO_ERROR) {
+        std::cout << "Image:" << err << std::endl;
     }
 
     Texture* tex = new ImageTexture(*img, addressMode, mipMode);
@@ -846,6 +856,12 @@ Texture* CreateProceduralTexture(int width, int height,
                                  Texture::AddressMode addressMode,
                                  Texture::MipMapMode mipMode)
 {
+
+    GLenum err;
+    while ((err = glGetError()) != GL_NO_ERROR) {
+        std::cout << "Image:" << err << std::endl;
+    }
+
     Image* img = new Image(format, width, height);
 
     for (int y = 0; y < height; y++)

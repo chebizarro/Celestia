@@ -944,7 +944,16 @@ bool Renderer::init(GLContext* _context,
     {
         g_lodSphere = new LODSphereMesh();
 
+        GLenum err;
+        while ((err = glGetError()) != GL_NO_ERROR) {
+            std::cout << "Image:" << err << std::endl;
+        }
+
         starTex = CreateProceduralTexture(64, 64, GL_RGB, StarTextureEval);
+
+        while ((err = glGetError()) != GL_NO_ERROR) {
+            std::cout << "Image:" << err << std::endl;
+        }
 
         glareTex = LoadTextureFromFile("textures/flare.jpg");
         if (glareTex == nullptr)
