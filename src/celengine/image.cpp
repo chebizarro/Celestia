@@ -7,83 +7,32 @@
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
 
+#include <algorithm>
+#include <cassert>
+#include <cmath>
+#include <cstdio>
+#include <cstring>
 #include <fstream>
-
-#ifndef TARGET_OS_MAC
-#define JPEG_SUPPORT
-#define PNG_SUPPORT
-#endif
-
-#ifdef TARGET_OS_MAC
-#include <unistd.h>
-#include "CGBuffer.h"
-#ifndef PNG_SUPPORT
-#include <Quicktime/ImageCompression.h>
-#include <QuickTime/QuickTimeComponents.h>
-#endif
-#endif
-
-#ifndef _WIN32
-#ifndef TARGET_OS_MAC
-#include <config.h>
-#endif /* ! TARGET_OS_MAC */
-#endif /* ! _WIN32 */
-
-#include "image.h"
-
-#ifdef JPEG_SUPPORT
-
-#ifndef PNG_SUPPORT
-#include "setjmp.h"
-#endif // PNG_SUPPORT
+#include <iostream>
 
 extern "C" {
-#ifdef _WIN32
-#include "jpeglib.h"
-#else
-#include <cstdio>
 #include <jpeglib.h>
-#endif
 }
-
-#endif // JPEG_SUPPORT
-
-#ifdef PNG_SUPPORT // PNG_SUPPORT
-#ifdef TARGET_OS_MAC
-#include "../../macosx/png.h"
-#else
-#include "png.h"
-#endif // TARGET_OS_MAC
+#include <png.h>
 
 #include <celutil/debug.h>
 #include <celutil/util.h>
 #include <celutil/filetype.h>
 #include <GL/glew.h>
-#include "celestia.h"
-
-#include <cassert>
-#include <iostream>
-#include <algorithm>
-#include <cmath>
-#include <cstring>
 #include <fmt/printf.h>
+#include <config.h>
+#include "celestia.h"
+#include "image.h"
+
+#define JPEG_SUPPORT
+#define PNG_SUPPORT
 
 using namespace std;
-
-
-// Define png_jmpbuf() in case we are using a pre-1.0.6 version of libpng
-#ifndef png_jmpbuf
-#define png_jmpbuf(png_ptr) png_ptr->jmpbuf
-#endif // PNG_SUPPORT
-
-// Define various expansion transformations for old versions of libpng
-#if PNG_LIBPNG_VER < 10004
-#define png_set_palette_to_rgb(p)  png_set_expand(p)
-#define png_set_gray_1_2_4_to_8(p) png_set_expand(p)
-#define png_set_tRNS_to_alpha(p)   png_set_expand(p)
-#endif // PNG_LIBPNG_VER < 10004
-
-#endif // PNG_SUPPORT
 
 
 // All rows are padded to a size that's a multiple of 4 bytes

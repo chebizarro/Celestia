@@ -38,8 +38,9 @@ else()
   # Disabled warnings
   # C4244: implicit type conversion to a smaller type
   # C4503: type truncation
+  # C4786: long names in templates
   # C4800: forcing value to bool
-  add_compile_options("/wd4244" "/wd4503" "/wd4800")
+  add_compile_options("/wd4244" "/wd4503" "/wd4786" "/wd4800")
 endif()
 
 if(UNIX AND (NOT APPLE) AND (NOT CYGWIN))
@@ -65,6 +66,7 @@ list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(GNUInstallDirs)
 include(CheckIncludeFiles)
 include(rpath)
+include(install_to_extras_subdir)
 if (NOT MSVC)
   include(cotire)
 else()
@@ -90,7 +92,14 @@ endif()
 
 if(ENABLE_SPICE)
   include(FindCspice)
-  find_package(Cspice REQUIRED)
+  find_package(Cspice)
+  if(NOT CSPICE_FOUND)
+    message(STATUS "Using cspice submodule")
+    add_subdirectory("${CMAKE_SOURCE_DIR}/thirdparty/Spice")
+
+    include_directories("${CMAKE_SOURCE_DIR}/thirdparty/Spice/include")
+    add_library(CSPICE::CSPICE ALIAS Spice)
+  endif()
 endif()
 
 if(_UNIX)
@@ -116,33 +125,28 @@ find_package(GLEW)
 if(GLEW_FOUND)
   link_libraries(GLEW::GLEW)
   include_directories(${GLEW_INCLUDE_DIRS})
-  link_libraries(${GLEW_LIBRARIES})
-  find_package(OpenGL)
 elseif(_UNIX)
   pkg_search_module(GLEW glew)
   if(GLEW_FOUND)
     include_directories(${GLEW_INCLUDE_DIRS})
     link_libraries(${GLEW_LIBRARIES})
   else()
-    message("Using bundled glew")
-    include_directories("${CMAKE_SOURCE_DIR}/thirdparty/glew/include")
-    add_definitions(-DGLEW_STATIC)
+    message(FATAL_ERROR "glew was not found")
   endif()
 else()
-  include_directories("${CMAKE_SOURCE_DIR}/thirdparty/glew/include")
-  add_definitions(-DGLEW_STATIC)
+  message(FATAL_ERROR "glew was not found")
 endif()
 
 find_package(Eigen3 3.3 NO_MODULE) # -DEigen3_DIR=...
 if(TARGET Eigen3::Eigen)
-  message("Found Eigen3 ${EIGEN3_VERSION_STRING}")
+  message(STATUS "Found Eigen3 ${EIGEN3_VERSION_STRING}")
   link_libraries(Eigen3::Eigen)
 elseif(_UNIX)
   pkg_search_module(EIGEN eigen3)
   if(EIGEN_FOUND)
     include_directories(${EIGEN_INCLUDE_DIRS})
   else()
-    message("Using bundled Eigen")
+    message(STATUS "Using Eigen submodule")
     include_directories("${CMAKE_SOURCE_DIR}/thirdparty/Eigen")
   endif()
 else()
@@ -153,8 +157,9 @@ find_package(fmt 4.0.0 CONFIG QUIET)
 if(fmt_FOUND)
   link_libraries(fmt::fmt)
 else()
-  message("Using bundled libfmt")
-  include_directories("${CMAKE_SOURCE_DIR}/thirdparty/fmt/include")
+  message(STATUS "Using fmt submodule")
+  add_subdirectory("${CMAKE_SOURCE_DIR}/thirdparty/fmt")
+  link_libraries(fmt::fmt)
 endif()
 
 find_package(PNG)
@@ -254,6 +259,14 @@ add_definitions(
   -DSPLASH_DIR="${FULL_DATADIR}/splash/"
   -DGIT_COMMIT=${GIT_COMMIT}
 )
+
+if(APPLE)
+  # TARGET_OS_MAC should be replaced with __APPLE__
+  add_definitions(-DTARGET_OS_MAC)
+  # Dirty hack to prevent AIFF.h inclusion which provides `struct Marker`
+  # conflicting with out `class Marker`.
+  add_definitions(-D__AIFF__)
+endif()
 
 string(TOLOWER "${CMAKE_BUILD_TYPE}" build_type_lc)
 if(NOT "${build_type_lc}" STREQUAL "debug")
